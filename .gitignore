@@ -1,0 +1,9 @@
+*.db
+
+/include
+
+/Lib
+
+/Scripts
+
+*.cfg
