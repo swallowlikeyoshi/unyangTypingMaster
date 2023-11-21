@@ -30,7 +30,7 @@ conn.commit()
 driver = webdriver.Chrome()
 
 def challenge_typing():
-
+    os.system('cls')
     # 사용자 정보 입력
     grade = int(input("학년을 입력하세요: "))
     class_num = int(input("반을 입력하세요: "))
@@ -46,9 +46,13 @@ def challenge_typing():
     if existing_user:
         print("이미 도전한 사용자입니다.")
         return
-    else:
-        print("도전을 시작합니다.")
-        time.sleep(2)
+    
+    os.system('cls')
+    print('도전 기회는 오직 1번 뿐입니다.')
+    print('화면에 표시된 문장을 5번 입력하면 평균 타자 속도가 측정됩니다.')
+    print('정확도 90% 미만 달성 시 실패 처리됩니다.')
+    print()
+    input('시작하려면 엔터: ')
 
     # 웹사이트로 이동
     driver.implicitly_wait(3000)
@@ -65,6 +69,11 @@ def challenge_typing():
     rstAvgAcc = driver.find_element(By.ID, "rstAvgAcc").text
 
     driver.close()
+
+    if int(rstAvgAcc) < 90:
+        print(f"정확도 {rstAvgAcc}% 로, 실패입니다.")
+        input("재시도하려면 엔터: ")
+        return
     
     # 데이터베이스에 사용자 정보 저장
     cursor.execute('''
@@ -109,6 +118,23 @@ def show_result_gui(name, rstAvgSpd, avg_acc):
     
     label1.place(relx=0.5, rely=0.4, anchor='center')
     label2.place(relx=0.5, rely=0.5, anchor='center')
+
+    confirm_button = tk.Button(root, text="확인", command=root.destroy)
+    confirm_button.place(relx=0.5, rely=0.8, anchor='center')
+
+    root.mainloop()
+
+def show_fail_gui(rstAvgAcc):
+    root = tk.Tk()
+    root.title("타자 결과")
+
+    root.geometry("400x300")
+    root.lift()
+    root.attributes('-topmost', True)
+
+    label1 = tk.Label(root, text="실패. 정확도: " + str(rstAvgAcc))
+
+    label1.place(relx=0.5, rely=0.4, anchor='center')
 
     confirm_button = tk.Button(root, text="확인", command=root.destroy)
     confirm_button.place(relx=0.5, rely=0.8, anchor='center')
