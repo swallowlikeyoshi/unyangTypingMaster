@@ -1,16 +1,12 @@
 import os
 import sqlite3
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 import tkinter as tk
-from tkinter import simpledialog
 import time
 
-# SQLite3 데이터베이스 연결~
+# SQLite3 데이터베이스 연결
 conn = sqlite3.connect('ranking.db')
 cursor = conn.cursor()
 
@@ -31,8 +27,7 @@ cursor.execute('''
 conn.commit()
 
 # 웹 드라이버 설정
-service = Service(excutable_path="chromedriver.exe")
-driver = webdriver.Chrome(service=service)
+driver = webdriver.Chrome()
 
 def challenge_typing():
 
