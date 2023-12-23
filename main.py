@@ -32,9 +32,9 @@ driver = webdriver.Chrome()
 def challenge_typing():
 
     # 사용자 정보 입력
-    grade = int(input("학년을 입력하세요: "))
-    class_num = int(input("반을 입력하세요: "))
-    number = int(input("번호를 입력하세요: "))
+    grade = int(input("학년을 입력하세요(숫자만): "))
+    class_num = int(input("반을 입력하세요(숫자만): "))
+    number = int(input("번호를 입력하세요(숫자만): "))
     name = input("이름을 입력하세요: ")
 
     # 중복 체크
@@ -126,8 +126,9 @@ def close():
 while True:
     os.system('cls')
     print("----------운양고 타자왕----------")
+    print('\n\n운양고 타자왕에 오신 것을 환영합니다.\n기회는 단 한번 뿐이며, 이미 도전한 사람은 다시 도전할 수 없습니다.\n\n')
     show_ranking()
-
+    print('\n\n')
     choice = input("도전하려면 Y를 누르세요: ")
     
     if choice.lower() == 'y':
