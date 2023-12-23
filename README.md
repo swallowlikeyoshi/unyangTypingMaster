@@ -47,124 +47,124 @@ unyangTypingMaster
 >   이 프로젝트를 구현하기 위해서는 Python에서 Selenium 및 sqlite3 라이브러리를 사용하여 웹 스크래핑 및 데이터베이스 조작을 해야 합니다. 또한 GUI를 만들기 위해 tkinter 또는 다른 GUI 라이브러리를 사용해야 합니다.  
 >   
 >   아래는 전반적인 구현 아이디어를 제공하는 코드입니다. 이 코드는 특정 라이브러리와 모듈이 설치되어 있어야 하며, 실제로 동작하려면 몇 가지 세부사항을 조정해야 할 수 있습니다.  
->   
->   python  
->   Copy code  
->   import sqlite3  
->   from selenium import webdriver
->   from selenium.webdriver.common.keys import Keys  
->   from selenium.webdriver.common.by import By  
->   from selenium.webdriver.support.ui import WebDriverWait  
->   from selenium.webdriver.support import expected_conditions as EC  
->   import tkinter as tk  
->   from tkinter import simpledialog  
->     
->   # SQLite3 데이터베이스 연결  
->   conn = sqlite3.connect('ranking.db')  
->   cursor = conn.cursor()
->     
->   # 테이블 생성
->   cursor.execute('''  
->       CREATE TABLE IF NOT EXISTS users (
->           id INTEGER PRIMARY KEY AUTOINCREMENT,  
->           grade INTEGER,
->           class INTEGER,  
->           number INTEGER,  
->           name TEXT,  
->           rstDate TEXT,  
->           rstMaxSpd INTEG ER,  
->           rstAvgSpd INTEGER,  
->           rstAvgAcc INTEGER  
->       )  
->   ''')  
->   conn.commit()  
->   
->   # 웹 드라이버 설정
->   driver = webdriver.Chrome()  
->   
->   def challenge_typing():  
->       # 웹사이트로 이동  
->       driver.get('https://typing.works/')  
->   
->       # 사용자 정보 입력  
->       grade = int(input("학년을 입력하세요: "))  
->       class_num = int(input("반을 입력하세요: "))  
->       number = int(input("번호를 입력하세요: "))  
->       name = input("이름을 입력하세요: ")  
->   
->       # 중복 체크  
->       cursor.execute('''  
->           SELECT id FROM users  
->           WHERE grade = ? AND class = ? AND number = ?  
->       ''', (grade, class_num, number))  
->       existing_user = cursor.fetchone()  
->       if existing_user:  
->           print("이미 도전한 사용자입니다.")  
->           return  
->   
->       # 데이터베이스에 사용자 정보 저장  
->       cursor.execute('''  
->           INSERT INTO users (grade, class, number, name)  
->           VALUES (?, ?, ?, ?)  
->       ''', (grade, class_num, number, name))  
->       conn.commit()  
->   
->       # 웹페이지에서 타자 속도 측정  
->       # ... (Selenium을 사용하여 측정 및 결과 수집)  
->   
->       # 측정 결과를 데이터베이스에 저장  
->       # ... (rstDate, rstMaxSpd, rstAvgSpd, rstAvgAcc 값을 가져와서 데이터베이스에 저장)  
->   
->       # GUI로 결과 표시  
->       show_result_gui(rstAvgSpd, rstAvgAcc)  
->   
->   def show_ranking():  
->       # 랭킹 조회  
->       cursor.execute('''  
->           SELECT name, rstAvgSpd  
->           FROM users  
->           ORDER BY rstAvgSpd DESC  
->           LIMIT 10  
->       ''')  
->       ranking = cursor.fetchall()  
->     
->       if not ranking:  
->           print("아무도 없음")  
->       else:  
->           print("랭킹:")  
->           for i, (name, avg_spd) in enumerate(ranking, 1):  
->               print(f"{i}. {name} - {avg_spd} WPM")  
->   
->   def show_result_gui(avg_spd, avg_acc):  
->       # 결과를 GUI로 표시  
->       root = tk.Tk()  
->       root.title("타자 결과")  
->   
->       label1 = tk.Label(root, text="평균 속도: " + str(avg_spd) + " WPM")  
->       label1.pack()  
->   
->       label2 = tk.Label(root, text="평균 정확도: " + str(avg_acc) + "%")  
->       label2.pack()  
->   
->       root.mainloop()  
->   
->   # 메인 콘솔 창
->   while True:  
->       print("운양고 타자왕")  
->       show_ranking()  
->   
->       choice = input("도전하려면 Y를 누르세요. (종료하려면 다른 키 입력): ")  
->       
->       if choice.lower() == 'y':  
->           challenge_typing()  
->       elif choice.lower() == 'r':  
->           show_ranking()  
->       else:  
->           break  
->   
->   # 연결 종료
->   conn.close()  
->   driver.quit()  
+
+  ```python  
+  import sqlite3  
+  from selenium import webdriver
+  from selenium.webdriver.common.keys import Keys  
+  from selenium.webdriver.common.by import By  
+  from selenium.webdriver.support.ui import WebDriverWait  
+  from selenium.webdriver.support import expected_conditions as EC  
+  import tkinter as tk  
+  from tkinter import simpledialog  
+    
+  # SQLite3 데이터베이스 연결  
+  conn = sqlite3.connect('ranking.db')  
+  cursor = conn.cursor()
+    
+  # 테이블 생성
+  cursor.execute('''  
+      CREATE TABLE IF NOT EXISTS users (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,  
+          grade INTEGER,
+          class INTEGER,  
+          number INTEGER,  
+          name TEXT,  
+          rstDate TEXT,  
+          rstMaxSpd INTEG ER,  
+          rstAvgSpd INTEGER,  
+          rstAvgAcc INTEGER  
+      )  
+  ''')  
+  conn.commit()  
+  
+  # 웹 드라이버 설정
+  driver = webdriver.Chrome()  
+  
+  def challenge_typing():  
+      # 웹사이트로 이동  
+      driver.get('https://typing.works/')  
+  
+      # 사용자 정보 입력  
+      grade = int(input("학년을 입력하세요: "))  
+      class_num = int(input("반을 입력하세요: "))  
+      number = int(input("번호를 입력하세요: "))  
+      name = input("이름을 입력하세요: ")  
+  
+      # 중복 체크  
+      cursor.execute('''  
+          SELECT id FROM users  
+          WHERE grade = ? AND class = ? AND number = ?  
+      ''', (grade, class_num, number))  
+      existing_user = cursor.fetchone()  
+      if existing_user:  
+          print("이미 도전한 사용자입니다.")  
+          return  
+  
+      # 데이터베이스에 사용자 정보 저장  
+      cursor.execute('''  
+          INSERT INTO users (grade, class, number, name)  
+          VALUES (?, ?, ?, ?)  
+      ''', (grade, class_num, number, name))  
+      conn.commit()  
+  
+      # 웹페이지에서 타자 속도 측정  
+      # ... (Selenium을 사용하여 측정 및 결과 수집)  
+  
+      # 측정 결과를 데이터베이스에 저장  
+      # ... (rstDate, rstMaxSpd, rstAvgSpd, rstAvgAcc 값을 가져와서 데이터베이스에 저장)  
+  
+      # GUI로 결과 표시  
+      show_result_gui(rstAvgSpd, rstAvgAcc)  
+  
+  def show_ranking():  
+      # 랭킹 조회  
+      cursor.execute('''  
+          SELECT name, rstAvgSpd  
+          FROM users  
+          ORDER BY rstAvgSpd DESC  
+          LIMIT 10  
+      ''')  
+      ranking = cursor.fetchall()  
+    
+      if not ranking:  
+          print("아무도 없음")  
+      else:  
+          print("랭킹:")  
+          for i, (name, avg_spd) in enumerate(ranking, 1):  
+              print(f"{i}. {name} - {avg_spd} WPM")  
+  
+  def show_result_gui(avg_spd, avg_acc):  
+      # 결과를 GUI로 표시  
+      root = tk.Tk()  
+      root.title("타자 결과")  
+  
+      label1 = tk.Label(root, text="평균 속도: " + str(avg_spd) + " WPM")  
+      label1.pack()  
+  
+      label2 = tk.Label(root, text="평균 정확도: " + str(avg_acc) + "%")  
+      label2.pack()  
+  
+      root.mainloop()  
+  
+  # 메인 콘솔 창
+  while True:  
+      print("운양고 타자왕")  
+      show_ranking()  
+  
+      choice = input("도전하려면 Y를 누르세요. (종료하려면 다른 키 입력): ")  
+      
+      if choice.lower() == 'y':  
+          challenge_typing()  
+      elif choice.lower() == 'r':  
+          show_ranking()  
+      else:  
+          break  
+  
+  # 연결 종료
+  conn.close()  
+  driver.quit()  
+  ```
 >   이 코드는 간단한 예시일 뿐이며, 실제로 동작하려면 여러 가지 예외 처리 및 보안 조치가 필요할 것입니다. 또한 Selenium으로 웹 스크래핑을 수행하는 부분은 웹 사이트가 변경될 경우 수정이 필요할 수 있습니다.
 
 
