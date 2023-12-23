@@ -26,15 +26,20 @@ cursor.execute('''
 ''')
 conn.commit()
 
-# 웹 드라이버 설정
-driver = webdriver.Chrome()
-
 def challenge_typing():
     os.system('cls')
+    print('\n\n')
     # 사용자 정보 입력
-    grade = int(input("학년을 입력하세요(숫자만): "))
-    class_num = int(input("반을 입력하세요(숫자만): "))
-    number = int(input("번호를 입력하세요(숫자만): "))
+    while True:
+        try:
+            grade = int(input("학년을 입력하세요(숫자만): "))
+            class_num = int(input("반을 입력하세요(숫자만): "))
+            number = int(input("번호를 입력하세요(숫자만): "))
+            break
+        except Exception:
+            os.system('cls')
+            print('\n숫자만 입력하세요!\n')
+            continue
     name = input("이름을 입력하세요: ")
 
     # 중복 체크
@@ -54,6 +59,11 @@ def challenge_typing():
     print()
     input('시작하려면 엔터: ')
 
+    # 웹 드라이버 설정
+    driver = webdriver.Chrome()
+    
+    print('\n\n크롬 창을 띄웠습니다. 만약 뜨지 않는다면 크롬이 열려있는지 한번 확인해보세요.\n')
+
     # 웹사이트로 이동
     driver.implicitly_wait(3000)
     driver.get('https://typing.works/')
@@ -68,10 +78,10 @@ def challenge_typing():
 
     rstAvgAcc = driver.find_element(By.ID, "rstAvgAcc").text
 
-    driver.close()
+    driver.quit()
 
     if int(rstAvgAcc) < 90:
-        print(f"정확도 {rstAvgAcc}% 로, 실패입니다.")
+        print(f"\n정확도 {rstAvgAcc}% 로, 실패입니다.")
         input("재시도하려면 엔터: ")
         return
     
@@ -83,7 +93,10 @@ def challenge_typing():
     conn.commit()
 
     # GUI로 결과 표시
-    show_result_gui(name, rstAvgSpd, rstAvgAcc)
+    print(f'\n성공입니다.\n당신의 결과:\n\t평균 타속: {rstAvgSpd}, 정확도: {rstAvgAcc}')
+    
+    print('\n\n끝내려면 엔터:')
+    input()
 
 def show_ranking():
     # 랭킹 조회
@@ -91,16 +104,21 @@ def show_ranking():
         SELECT grade, class_num, number, name, rstAvgSpd, rstAvgAcc
         FROM users
         ORDER BY rstAvgSpd DESC
-        LIMIT 10
+        LIMIT 5
     ''')
     ranking = cursor.fetchall()
+
+    cursor.execute(f"SELECT COUNT(*) FROM users")
+    row_count = cursor.fetchone()[0]
 
     if not ranking:
         print("아무도 없음")
     else:
-        print("랭킹:")
+        print("현재 TOP 5:")
         for i, (grade, class_num, number, name, rstAvgSpd, rstAvgAcc) in enumerate(ranking, 1):
-            print(f"{i}. {grade}{str(class_num).zfill(2)}{str(number).zfill(2)} - {name} - 평균: {rstAvgSpd} WPM, 정확도: {rstAvgAcc}%")
+            print(f"\t{i}. {grade}{str(class_num).zfill(2)}{str(number).zfill(2)} - {'%-30s' % name}")
+            print(f"\t\t\t- 평균: {rstAvgSpd} WPM, 정확도: {rstAvgAcc}%\n")
+        print(f'\n\t...이 외에 {row_count - 5}명이 도전했습니다!')
 
 def show_result_gui(name, rstAvgSpd, avg_acc):
     # 결과를 GUI로 표시
@@ -143,25 +161,35 @@ def show_fail_gui(rstAvgAcc):
 
 def close():
     # 연결 종료
-    print('프로그램을 종료합니다.')
+    print('프로그램을 종료하고 있습니다...')
     conn.close()
-    driver.quit()
     exit()
 
-# 메인 콘솔 창
-while True:
-    os.system('cls')
-    print("----------운양고 타자왕----------")
-    print('\n\n운양고 타자왕에 오신 것을 환영합니다.\n기회는 단 한번 뿐이며, 이미 도전한 사람은 다시 도전할 수 없습니다.\n\n')
-    show_ranking()
-    print('\n\n')
-    choice = input("도전하려면 Y를 누르세요: ")
-    
-    if choice.lower() == 'y':
-        challenge_typing()
-    elif choice.lower() == 'rrrrrr':
-        show_ranking()
-    elif choice.lower() == 'qqqqqq':
-        close()
-    else:
-        continue
+if __name__ == '__main__':
+    # 메인 콘솔 창
+    while True:
+        try:
+            os.system('cls')
+            print("----------운양고 타자왕----------")
+            print('\n\n운양고 타자왕에 오신 것을 환영합니다.\n다른 도전자들과 타자 속도를 겨루고 경품을 얻어가세요!\n\n')
+            print('\n경품:')
+            print('\t1등: 청축 기계식 키보드')
+            print('\t2등: 로지텍 G102 게이밍 마우스')
+            print('\t참가상: 다양한 간식!\n')
+            show_ranking()
+            print('\n\n')
+            choice = input("도전하시겠습니까? [y/n] ")
+            
+            if choice.lower() == 'y':
+                challenge_typing()
+            elif choice.lower() == 'rrrrrr':
+                show_ranking()
+            elif choice.lower() == 'qqqqqq':
+                close()
+            else:
+                continue
+        except Exception as e:
+            print(str(e) + '\n\n\n에러가 발생했습니다.')
+            print('다시 시작하려면 엔터')
+            input()
+            continue
