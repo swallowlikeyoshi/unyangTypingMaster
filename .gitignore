@@ -1,0 +1,11 @@
+*.db
+
+/include
+
+/Lib
+
+/Scripts
+
+*.cfg
+
+__pycache__/
